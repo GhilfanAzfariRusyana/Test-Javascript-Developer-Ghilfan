@@ -6,7 +6,11 @@
 
     <div ng-if="checklist">
         <h3>{{ checklist.name }}</h3>
-        <p>{{ checklist.description || 'Tidak ada deskripsi.' }}</p>
+
+        <form ng-submit="addItem()">
+            <input type="text" ng-model="newItemText" placeholder="Tambah item baru..." required />
+            <button type="submit">Tambah</button>
+        </form>
 
         <ul>
             <li ng-repeat="item in items">

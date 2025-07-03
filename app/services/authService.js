@@ -48,6 +48,33 @@ app.factory('AuthService', function($http) {
                 { headers: getAuthHeaders() }
             );
         },
+        createChecklistItem: function(checklistId, itemName) {
+            return $http.post(
+                `${baseUrl}/checklist/${checklistId}/item`,
+                { itemName: itemName },
+                { headers: getAuthHeaders() }
+            );
+        },
+        getChecklistItems: function(checklistId) {
+            return $http.get(`${baseUrl}/checklist/${checklistId}/item`, {
+                headers: getAuthHeaders()
+            });
+        },
+
+        createChecklistItem: function(checklistId, itemName) {
+            return $http.post(`${baseUrl}/checklist/${checklistId}/item`, {
+                itemName: itemName
+            }, {
+                headers: getAuthHeaders()
+            });
+        },
+
+        getChecklistById: function(checklistId) {
+            return $http.get(`${baseUrl}/checklist/${checklistId}`, {
+                headers: getAuthHeaders()
+            });
+        }
+      
         
     };
 });

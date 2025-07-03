@@ -5,7 +5,6 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
     $scope.error = '';
     $scope.newItemText = '';
 
-
     AuthService.getAllChecklists()
         .then(function(res) {
             const allChecklists = res.data.data || res.data || [];
@@ -17,13 +16,11 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
                 return;
             }
 
-       
             if (!$scope.checklist.items || $scope.checklist.items.length === 0) {
                 $scope.items = [];
                 return;
             }
 
-   
             const promises = $scope.checklist.items.map(item =>
                 AuthService.getChecklistItem(checklistId, item.id)
                     .then(response => response.data.data || response.data)
@@ -43,6 +40,32 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
             console.error('Gagal ambil daftar checklist', err);
             $scope.error = 'Gagal mengambil data checklist.';
         });
+
+    $scope.loadChecklistItems = function() {
+        AuthService.getChecklistById(checklistId)
+            .then(function(response) {
+                $scope.checklist = response.data.data;  
+                $scope.items = $scope.checklist.items || [];
+            })
+            .catch(function(err) {
+                $scope.error = 'Gagal memuat data checklist';
+                console.error(err);
+            });
+    };
+
+    $scope.addItem = function() {
+        if (!$scope.newItemText) return;
+
+        AuthService.createChecklistItem(checklistId, $scope.newItemText)
+            .then(function(response) {
+                $scope.items.push(response.data.data);
+                $scope.newItemText = '';
+            })
+            .catch(function(err) {
+                $scope.error = 'Gagal menambah item.';
+                console.error(err);
+            });
+    };
 
     $scope.goBack = function() {
         $location.path('/todo');
@@ -66,11 +89,7 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
 
     $scope.toggleStatus = function(item) {
         item.completed = !item.completed;
-  
-    };
-
-    $scope.addItem = function() {
-        alert('Fitur tambah item belum tersedia di API');
+       
     };
 
     $scope.deleteItem = function(item) {
