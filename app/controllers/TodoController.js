@@ -10,7 +10,6 @@ app.controller('TodoController', function($scope, AuthService) {
     $scope.error = '';
     AuthService.getAllChecklists()
         .then(function(response) {
-            // Cek apakah data berada dalam response.data.data
             if (response.data && response.data.data) {
                 $scope.checklists = response.data.data;
             } else {
@@ -53,6 +52,30 @@ app.controller('TodoController', function($scope, AuthService) {
                 console.error(err);
             });
     };
+
+    $scope.selectedChecklists = [];
+
+$scope.updateSelection = function() {
+    $scope.selectedChecklists = $scope.checklists.filter(c => c.selected);
+};
+
+$scope.deleteSelectedChecklists = function() {
+    if (!confirm('Yakin ingin menghapus semua checklist yang dipilih?')) return;
+
+    const deletePromises = $scope.selectedChecklists.map(item => 
+        AuthService.deleteChecklist(item.id)
+    );
+
+    Promise.all(deletePromises)
+        .then(() => {
+            $scope.selectedChecklists = [];
+            $scope.loadChecklists();
+        })
+        .catch(err => {
+            $scope.error = 'Gagal menghapus beberapa checklist.';
+            console.error(err);
+        });
+};
 
     // Initial load
     $scope.loadChecklists();

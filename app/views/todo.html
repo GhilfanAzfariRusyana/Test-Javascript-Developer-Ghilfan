@@ -9,9 +9,16 @@
     <p ng-if="loading">Memuat data...</p>
     <p ng-if="error" class="error">{{ error }}</p>
 
+    <div ng-if="selectedChecklists.length > 0">
+        <button ng-click="deleteSelectedChecklists()">Hapus Checklist Terpilih ({{ selectedChecklists.length }})</button>
+    </div>
+
     <ul>
         <li ng-repeat="checklist in checklists">
-            <a href="#!/checklist/{{ checklist.id }}">{{ checklist.name }}</a>
+            <label>
+                <input type="checkbox" ng-model="checklist.selected" ng-change="updateSelection()"> 
+                <a href="#!/checklist/{{ checklist.id }}">{{ checklist.name }}</a>
+            </label>
             <button ng-click="deleteChecklist(checklist.id)">Hapus</button>
         </li>
     </ul>
