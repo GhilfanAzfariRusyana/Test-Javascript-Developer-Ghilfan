@@ -54,18 +54,33 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
     };
 
     $scope.addItem = function() {
-        if (!$scope.newItemText) return;
+        console.log('addItem dipanggil, newItemText:', $scope.newItemText);
 
-        AuthService.createChecklistItem(checklistId, $scope.newItemText)
+        if (!$scope.newItemText || $scope.newItemText.trim() === '') {
+            console.log('newItemText kosong, batal tambah');
+            return;
+        }
+
+        AuthService.createChecklistItem(checklistId, $scope.newItemText.trim())
             .then(function(response) {
-                $scope.items.push(response.data.data);
+                console.log('response dari createChecklistItem:', response);
                 $scope.newItemText = '';
+
+                // Ambil ulang daftar item setelah tambah sukses
+                return AuthService.getChecklistItemsbyId(checklistId);
+            })
+            .then(function(response) {
+                const items = response.data.data || response.data || [];
+                $scope.items = items;
+                $scope.$applyAsync();
             })
             .catch(function(err) {
                 $scope.error = 'Gagal menambah item.';
                 console.error(err);
             });
     };
+
+
 
     $scope.goBack = function() {
         $location.path('/todo');

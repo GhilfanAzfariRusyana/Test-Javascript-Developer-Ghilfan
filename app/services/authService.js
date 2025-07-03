@@ -55,7 +55,7 @@ app.factory('AuthService', function($http) {
                 { headers: getAuthHeaders() }
             );
         },
-        getChecklistItems: function(checklistId) {
+        getChecklistItemsbyId: function(checklistId) {
             return $http.get(`${baseUrl}/checklist/${checklistId}/item`, {
                 headers: getAuthHeaders()
             });

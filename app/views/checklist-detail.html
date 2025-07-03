@@ -7,10 +7,12 @@
     <div ng-if="checklist">
         <h3>{{ checklist.name }}</h3>
 
-        <form ng-submit="addItem()">
+    <div ng-controller="ChecklistDetailController">
+        <form>
             <input type="text" ng-model="newItemText" placeholder="Tambah item baru..." required />
-            <button type="submit">Tambah</button>
+            <button type="button" ng-click="addItem()">Tambah</button>
         </form>
+    </div>
 
         <ul>
             <li ng-repeat="item in items">
