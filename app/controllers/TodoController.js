@@ -6,20 +6,26 @@ app.controller('TodoController', function($scope, AuthService) {
 
 
     $scope.loadChecklists = function() {
-        $scope.loading = true;
-        $scope.error = '';
-        AuthService.getAllChecklists()
-            .then(function(response) {
-                $scope.checklists = response.data; 
-            })
-            .catch(function(err) {
-                $scope.error = 'Gagal mengambil data checklist.';
-                console.error(err);
-            })
-            .finally(function() {
-                $scope.loading = false;
-            });
-    };
+    $scope.loading = true;
+    $scope.error = '';
+    AuthService.getAllChecklists()
+        .then(function(response) {
+            // Cek apakah data berada dalam response.data.data
+            if (response.data && response.data.data) {
+                $scope.checklists = response.data.data;
+            } else {
+                $scope.checklists = []; // fallback
+            }
+        })
+        .catch(function(err) {
+            $scope.error = 'Gagal mengambil data checklist.';
+            console.error(err);
+        })
+        .finally(function() {
+            $scope.loading = false;
+        });
+};
+
 
 
     $scope.addChecklist = function() {
