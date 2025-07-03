@@ -18,6 +18,7 @@
             <li ng-repeat="item in items">
                 <input type="checkbox" ng-model="item.selected" ng-change="updateSelectedItems()" />
                 <span ng-class="{ done: item.completed }">{{ item.name }}</span>
+                <button ng-click="viewItemDetail(item)">Lihat Detail</button>
                 <button ng-click="renameItem(item)">Ubah</button>
                 <button ng-click="deleteItem(item)">Hapus</button>
             </li>

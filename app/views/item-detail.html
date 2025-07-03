@@ -1,0 +1,14 @@
+<div class="item-detail-container">
+    <h2>Detail Item Checklist</h2>
+
+    <div ng-if="itemDetail">
+        <p><strong>Nama:</strong> {{ itemDetail.name }}</p>
+        <p><strong>Detail:</strong> Ini detail item</p>
+    </div>
+
+    <div ng-if="error">
+        <p style="color: red;">{{ error }}</p>
+    </div>
+
+    <button ng-click="goBack()">Kembali ke Detail Checklist</button>
+</div>

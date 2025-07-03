@@ -163,4 +163,8 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
                 alert('Terjadi kesalahan saat menghapus item.');
             });
     };
+
+    $scope.viewItemDetail = function(item) {
+        $location.path(`/checklist/${checklistId}/item/${item.id}`);
+    };
 });

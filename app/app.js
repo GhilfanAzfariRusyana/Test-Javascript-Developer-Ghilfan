@@ -19,6 +19,10 @@ app.config(function($routeProvider) {
             templateUrl: 'app/views/checklist-detail.html',
             controller: 'ChecklistDetailController'
         })
+        .when('/checklist/:checklistId/item/:itemId', {
+            templateUrl: 'app/views/item-detail.html',
+            controller: 'ItemDetailController'
+        })
         .otherwise({
             redirectTo: '/login'
         });
