@@ -1,17 +1,26 @@
-<div class="checklist-detail">
-    <h3>{{ checklist.name }}</h3>
+<div class="checklist-detail-container">
 
-    <form ng-submit="addItem()">
-        <input type="text" ng-model="newItem" placeholder="Tambah item baru" required>
-        <button type="submit">Tambah</button>
-    </form>
+   
 
-    <ul>
-        <li ng-repeat="item in checklist.items">
-            <input type="checkbox" ng-model="item.completed" ng-change="toggleStatus(item)">
-            <span ng-class="{done: item.completed}">{{ item.text }}</span>
-            <button ng-click="editItem(item)">Ubah</button>
-            <button ng-click="deleteItem(item)">Hapus</button>
-        </li>
-    </ul>
+    <h2>Detail Checklist</h2>
+
+    <div ng-if="checklist">
+        <h3>{{ checklist.name }}</h3>
+        <p>{{ checklist.description || 'Tidak ada deskripsi.' }}</p>
+
+        <ul>
+            <li ng-repeat="item in items">
+                <input type="checkbox" ng-model="item.completed" ng-change="toggleStatus(item)" />
+                <span ng-class="{ done: item.completed }">{{ item.text }}</span>
+                <button ng-click="renameItem(item)">Ubah</button>
+                <button ng-click="deleteItem(item)">Hapus</button>
+            </li>
+        </ul>
+    </div>
+
+    <div ng-if="error">
+        <p>{{ error }}</p>
+    </div>
+
+     <button ng-click="goBack()">Kembali ke Daftar Checklist</button>
 </div>

@@ -37,6 +37,17 @@ app.factory('AuthService', function($http) {
                 url: `${baseUrl}/checklist/${id}`,
                 headers: getAuthHeaders()
             });
-        }
+        },
+        getChecklistItem: function(checklistId, checklistItemId) {
+            return $http.get(`${baseUrl}/checklist/${checklistId}/item/${checklistItemId}`, { headers: getAuthHeaders() });
+        },
+        renameChecklistItem: function(checklistId, checklistItemId, newName) {
+            return $http.put(
+                `${baseUrl}/checklist/${checklistId}/item/rename/${checklistItemId}`,
+                { itemName: newName },
+                { headers: getAuthHeaders() }
+            );
+        },
+        
     };
 });

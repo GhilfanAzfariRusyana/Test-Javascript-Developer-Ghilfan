@@ -1,46 +1,79 @@
-app.controller('ChecklistDetailController', function($scope, $routeParams, $location) {
-    const checklistId = $routeParams.id;
+app.controller('ChecklistDetailController', function($scope, $routeParams, $location, AuthService) {
+    const checklistId = parseInt($routeParams.id);
+    $scope.checklist = null;
+    $scope.items = [];
+    $scope.error = '';
+    $scope.newItemText = '';
 
-    // Ambil semua checklist dari sessionStorage
-    const allChecklists = JSON.parse(sessionStorage.getItem('checklists')) || [];
-    $scope.checklist = allChecklists.find(c => c.id == checklistId);
 
-    if (!$scope.checklist) {
-        alert("Checklist tidak ditemukan!");
+    AuthService.getAllChecklists()
+        .then(function(res) {
+            const allChecklists = res.data.data || res.data || [];
+
+            $scope.checklist = allChecklists.find(c => c.id === checklistId);
+
+            if (!$scope.checklist) {
+                $scope.error = 'Checklist tidak ditemukan';
+                return;
+            }
+
+       
+            if (!$scope.checklist.items || $scope.checklist.items.length === 0) {
+                $scope.items = [];
+                return;
+            }
+
+   
+            const promises = $scope.checklist.items.map(item =>
+                AuthService.getChecklistItem(checklistId, item.id)
+                    .then(response => response.data.data || response.data)
+                    .catch(err => {
+                        console.error('Gagal ambil item', item.id, err);
+                        return null;
+                    })
+            );
+
+            Promise.all(promises).then(results => {
+                $scope.items = results.filter(i => i !== null);
+                $scope.$applyAsync();
+            });
+
+        })
+        .catch(function(err) {
+            console.error('Gagal ambil daftar checklist', err);
+            $scope.error = 'Gagal mengambil data checklist.';
+        });
+
+    $scope.goBack = function() {
         $location.path('/todo');
-        return;
-    }
+    };
 
-    if (!$scope.checklist.items) {
-        $scope.checklist.items = [];
-    }
+    $scope.renameItem = function(item) {
+        const updatedText = prompt("Ubah item:", item.text);
+        if (!updatedText) return;
 
-    $scope.addItem = function() {
-        if (!$scope.newItem) return;
-        $scope.checklist.items.push({ text: $scope.newItem, completed: false });
-        $scope.newItem = '';
-        saveChecklist();
+        AuthService.renameChecklistItem(checklistId, item.id, updatedText)
+            .then(function() {
+                item.text = updatedText;
+                alert('Nama item berhasil diubah.');
+                $scope.$applyAsync();
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('Gagal merename item. Coba lagi.');
+            });
     };
 
     $scope.toggleStatus = function(item) {
         item.completed = !item.completed;
-        saveChecklist();
+  
+    };
+
+    $scope.addItem = function() {
+        alert('Fitur tambah item belum tersedia di API');
     };
 
     $scope.deleteItem = function(item) {
-        $scope.checklist.items = $scope.checklist.items.filter(i => i !== item);
-        saveChecklist();
+        alert('Fitur hapus item belum tersedia di API');
     };
-
-    $scope.editItem = function(item) {
-        const newText = prompt("Ubah item:", item.text);
-        if (newText) {
-            item.text = newText;
-            saveChecklist();
-        }
-    };
-
-    function saveChecklist() {
-        sessionStorage.setItem('checklists', JSON.stringify(allChecklists));
-    }
 });
