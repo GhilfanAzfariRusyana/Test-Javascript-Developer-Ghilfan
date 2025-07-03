@@ -73,6 +73,12 @@ app.factory('AuthService', function($http) {
             return $http.get(`${baseUrl}/checklist/${checklistId}`, {
                 headers: getAuthHeaders()
             });
+        },
+
+        deleteChecklistItem: function(checklistId, checklistItemId) {
+            return $http.delete(`${baseUrl}/checklist/${checklistId}/item/${checklistItemId}`, {
+                headers: getAuthHeaders()
+            });
         }
       
         

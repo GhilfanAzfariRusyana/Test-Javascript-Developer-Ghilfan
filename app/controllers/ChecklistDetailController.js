@@ -66,7 +66,6 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
                 console.log('response dari createChecklistItem:', response);
                 $scope.newItemText = '';
 
-                // Ambil ulang daftar item setelah tambah sukses
                 return AuthService.getChecklistItemsbyId(checklistId);
             })
             .then(function(response) {
@@ -87,12 +86,12 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
     };
 
     $scope.renameItem = function(item) {
-        const updatedText = prompt("Ubah item:", item.text);
+        const updatedText = prompt("Ubah item:", item.name);
         if (!updatedText) return;
 
         AuthService.renameChecklistItem(checklistId, item.id, updatedText)
             .then(function() {
-                item.text = updatedText;
+                item.name = updatedText;
                 alert('Nama item berhasil diubah.');
                 $scope.$applyAsync();
             })
@@ -108,6 +107,60 @@ app.controller('ChecklistDetailController', function($scope, $routeParams, $loca
     };
 
     $scope.deleteItem = function(item) {
-        alert('Fitur hapus item belum tersedia di API');
+        const konfirmasi = confirm(`Yakin ingin menghapus item "${item.name}"?`);
+        if (!konfirmasi) return;
+
+        AuthService.deleteChecklistItem(checklistId, item.id)
+            .then(function() {
+                return AuthService.getChecklistItemsbyId(checklistId);
+            })
+            .then(function(response) {
+                $scope.items = response.data.data || response.data || [];
+                $scope.$applyAsync();
+                alert('Item berhasil dihapus.');
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('Gagal menghapus item.');
+            });
+    };
+
+    $scope.selectedItems = [];
+    $scope.updateSelectedItems = function () {
+        $scope.selectedItems = $scope.items.filter(item => item.selected);
+    };
+    $scope.deleteSelectedItems = function() {
+        const selectedItems = $scope.items.filter(item => item.selected);
+
+        if (selectedItems.length === 0) {
+            alert('Tidak ada item yang dipilih untuk dihapus.');
+            return;
+        }
+
+        const konfirmasi = confirm(`Yakin ingin menghapus ${selectedItems.length} item?`);
+        if (!konfirmasi) return;
+
+        const deletePromises = selectedItems.map(item =>
+            AuthService.deleteChecklistItem(checklistId, item.id)
+                .catch(err => {
+                    console.error(`Gagal hapus item ID ${item.id}`, err);
+                    return null;
+                })
+        );
+
+        Promise.all(deletePromises)
+            .then(() => {
+                return AuthService.getChecklistItemsbyId(checklistId);
+            })
+            .then(function(response) {
+                $scope.items = response.data.data || response.data || [];
+                $scope.updateSelectedItems();
+                $scope.$applyAsync();
+                alert('Item yang dipilih berhasil dihapus.');
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat menghapus item.');
+            });
     };
 });
