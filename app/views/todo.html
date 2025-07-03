@@ -1,0 +1,18 @@
+<div class="todo-container">
+    <h2>Checklist Saya</h2>
+
+    <form ng-submit="addChecklist()">
+        <input type="text" ng-model="newChecklistName" placeholder="Nama checklist baru" required>
+        <button type="submit">Tambah</button>
+    </form>
+
+    <p ng-if="loading">Memuat data...</p>
+    <p ng-if="error" class="error">{{ error }}</p>
+
+    <ul>
+        <li ng-repeat="checklist in checklists">
+            <a href="#!/checklist/{{ checklist.id }}">{{ checklist.name }}</a>
+            <button ng-click="deleteChecklist(checklist.id)">Hapus</button>
+        </li>
+    </ul>
+</div>
